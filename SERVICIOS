@@ -1,0 +1,6 @@
+[root@AX-SM-BANDWIFTH-REPORT ~]# python3 --version
+Python 3.6.8
+
+
+// ver servicios
+ systemctl list-units --type=service --state=running  
