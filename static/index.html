@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b5ed7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi Bus">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<title>Mi Bus EMT</title>
+<style>
+  :root {
+    --bg: #f2f4f7; --card: #fff; --text: #111827; --muted: #6b7280; --line: #e5e7eb;
+    --brand: #0b5ed7; --soon: #dc2626; --mid: #d97706; --ok: #059669;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b0f17; --card: #161b26; --text: #f3f4f6; --muted: #9ca3af; --line: #262d3b; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    padding: env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 24px);
+  }
+  header {
+    position: sticky; top: 0; z-index: 5; background: var(--brand); color: #fff;
+    padding: calc(env(safe-area-inset-top) + 12px) 16px 12px; margin-top: calc(-1 * env(safe-area-inset-top));
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  header h1 { margin: 0; font-size: 20px; }
+  #status { font-size: 12px; opacity: .85; }
+  main { padding: 12px 16px; max-width: 640px; margin: 0 auto; }
+  .add { display: flex; gap: 8px; margin-bottom: 12px; }
+  .add input {
+    flex: 1; min-width: 0; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); font-size: 16px;
+  }
+  button {
+    border: 0; border-radius: 12px; padding: 12px 14px; font-size: 15px; font-weight: 600;
+    background: var(--brand); color: #fff; cursor: pointer;
+  }
+  button.ghost { background: transparent; color: var(--muted); padding: 6px 8px; font-weight: 500; }
+  .hint {
+    background: #fff7e6; color: #7a4b00; border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-bottom: 12px;
+  }
+  @media (prefers-color-scheme: dark) { .hint { background: #2b2210; color: #f5d08a; } }
+  .card { background: var(--card); border-radius: 16px; margin-bottom: 14px; overflow: hidden; }
+  .card-head { display: flex; align-items: center; padding: 12px 14px 8px; gap: 8px; }
+  .card-head .t { flex: 1; min-width: 0; }
+  .card-head b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-head small { color: var(--muted); }
+  .row {
+    display: grid; grid-template-columns: 52px 1fr auto 40px; align-items: center; gap: 10px;
+    padding: 10px 14px; border-top: 1px solid var(--line);
+  }
+  .badge {
+    background: var(--brand); color: #fff; border-radius: 8px; text-align: center;
+    font-weight: 700; padding: 6px 0; font-size: 15px;
+  }
+  .dest { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dest small { display: block; color: var(--muted); font-size: 12px; }
+  .eta { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 20px; text-align: right; }
+  .eta.soon { color: var(--soon); } .eta.mid { color: var(--mid); } .eta.ok { color: var(--ok); }
+  .eta.none { color: var(--muted); font-size: 14px; font-weight: 500; }
+  .bell { background: transparent; color: var(--muted); padding: 6px; font-size: 20px; }
+  .bell.on { color: var(--mid); }
+  .empty, .err { padding: 12px 14px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+  .err { color: var(--soon); }
+  #alerts h2 { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 18px 0 8px; }
+  .alert-item { display: flex; align-items: center; justify-content: space-between; background: var(--card);
+    border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; font-size: 14px; }
+  /* hoja inferior para elegir minutos */
+  #sheet { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: none; align-items: flex-end; z-index: 20; }
+  #sheet.open { display: flex; }
+  #sheet .panel { background: var(--card); width: 100%; border-radius: 20px 20px 0 0;
+    padding: 18px 16px calc(env(safe-area-inset-bottom) + 18px); }
+  #sheet h3 { margin: 0 0 4px; } #sheet p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  .opts button { background: var(--bg); color: var(--text); }
+  #toast { position: fixed; left: 16px; right: 16px; bottom: calc(env(safe-area-inset-bottom) + 16px);
+    background: #111827; color: #fff; padding: 14px 16px; border-radius: 14px; font-weight: 600;
+    transform: translateY(150%); transition: transform .25s; z-index: 30; }
+  #toast.show { transform: none; }
+  #toast.urgent { background: var(--soon); }
+</style>
+</head>
+<body>
+<header>
+  <h1>🚌 Mi Bus</h1>
+  <span id="status">—</span>
+</header>
+<main>
+  <div id="install-hint" class="hint" hidden>
+    Para recibir alertas en el iPhone: pulsa <b>Compartir</b> y luego <b>Añadir a pantalla de inicio</b>, y abre la app desde el icono.
+  </div>
+  <form class="add" id="add-form">
+    <input id="stop-input" inputmode="numeric" pattern="[0-9]*" placeholder="Nº de parada (p. ej. 72)" required>
+    <input id="alias-input" placeholder="Nombre (opcional)">
+    <button>Añadir</button>
+  </form>
+  <div id="stops"></div>
+  <section id="alerts"></section>
+</main>
+
+<div id="sheet">
+  <div class="panel">
+    <h3 id="sheet-title">Avisarme</h3>
+    <p>¿Cuántos minutos antes de que llegue?</p>
+    <div class="opts" id="sheet-opts"></div>
+    <button class="ghost" id="sheet-cancel" style="width:100%">Cancelar</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

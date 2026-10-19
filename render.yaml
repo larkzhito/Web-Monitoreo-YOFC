@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: mi-bus-emt
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    # un solo proceso: el vigilante de alertas vive dentro de él
+    startCommand: gunicorn app:app --workers 1 --threads 8 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/check
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: EMT_EMAIL
+        sync: false
+      - key: EMT_PASSWORD
+        sync: false
+      - key: EMT_CLIENT_ID
+        sync: false
+      - key: EMT_PASSKEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUB
+        sync: false
+      - key: APP_KEY
+        sync: false

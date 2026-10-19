@@ -1,0 +1,5 @@
+.env
+data.json
+vapid_private.pem
+__pycache__/
+render-secrets.txt

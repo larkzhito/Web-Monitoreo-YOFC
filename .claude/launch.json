@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "mibus", "runtimeExecutable": "python", "runtimeArgs": ["app.py"], "port": 5055 },
+    { "name": "mibus-demo", "runtimeExecutable": "cmd", "runtimeArgs": ["/c", "set EMT_DEMO=1&& python app.py"], "port": 5055 }
+  ]
+}
